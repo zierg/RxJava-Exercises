@@ -38,33 +38,39 @@ public class RxExercise
 
     private static Observable<Response> createObservable(Request request)
     {
-        Multimap<String, String> routes = ArrayListMultimap.create();
-        for (String param : request.getParams())
-        {
-            if (param.startsWith("me"))
-            {
-                routes.put("me", param);
-            }
-            else if (param.startsWith("uri1"))
-            {
-                routes.put("uri1", param);
-            }
-            else if (param.startsWith("uri2"))
-            {
-                routes.put("uri2", param);
-            }
-        }
-
-        List<Observable<Map.Entry<String, String>>> observables = new ArrayList<>();
-        for (Map.Entry<String, Collection<String>> entry : routes.asMap().entrySet())
-        {
-            observables.add(createRequest(entry.getKey(), entry.getValue()));
-        }
-        return Observable.merge(observables).reduce(new Response(), (response, entry) -> {
-            response.addParam(entry.getKey(), entry.getValue());
-            //logThread("adding param " + entry.getKey());
-            return response;
-        });
+        /*Collection<String> params = request.getParams();
+        Observable.from(params)
+                .groupBy(param -> {
+                    if (param.startsWith("me"))
+                    {
+                        return "me";
+                    }
+                    else if (param.startsWith("uri1"))
+                    {
+                        return "uri1";
+                    }
+                    else if (param.startsWith("uri2"))
+                    {
+                        return "uri2";
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Unsupported URI");
+                    }
+                })
+                .map(grouped -> grouped
+                             .subscribeOn(Schedulers.io())
+                             .reduce(new ArrayList<String>(), (list, param) -> {
+                                 list.add(param);
+                                 return list;
+                             })
+                             .map(list -> getResponse(grouped.getKey(), list))
+                             .map(Response::getParams)
+                             .map(Map::entrySet)
+                             .flatMap(Observable::from)
+                ).reduce(Observable.<Map.Entry<String, String>>empty(), Observable::merge)
+                .flatMap()*/
+        return null;
     }
 
     private static Observable<Map.Entry<String, String>> createRequest(String uri, Collection<String> requestedParams)
